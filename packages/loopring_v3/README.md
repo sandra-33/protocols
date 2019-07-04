@@ -43,6 +43,8 @@ To understand the overall design for Loopring 3.0, including Ethereum smart cont
 
 This branch contains precompiled binaries for the circuits. If you run macOS you need to delete `build/circuit/dex_circuit` (which is the linux binary) and rename `build/circuit/dex_circuit_mac` to `build/circuit/dex_circuit`.
 
+On Linux you may have to install OpenMP before you can use the binary: `sudo apt install libomp-dev`.
+
 ## Run Unit Tests
 * run `npm run ganache` from project's root directory in terminal.
 * run `npm run test` from project's root directory in another terminal window.
