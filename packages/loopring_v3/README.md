@@ -41,11 +41,7 @@ To understand the overall design for Loopring 3.0, including Ethereum smart cont
 
 ### Circuits
 
-The code of our circuits is currently not open source. If you have access to the private repo `protocol3-circuits` please clone it and update the `circuit_src_folder` variable in `circuit/CMakeLists.txt` so it points to the correct folder.
-
-```
-make
-```
+This branch contains precompiled binaries for the circuits. If you run macOS you need to delete `build/circuit/dex_circuit` (which is the linux binary) and rename `build/circuit/dex_circuit_mac` to `build/circuit/dex_circuit`.
 
 ## Run Unit Tests
 * run `npm run ganache` from project's root directory in terminal.
