@@ -8,22 +8,6 @@ import Eth from "../lib/wallet/ethereum/eth";
 import Transaction from "../lib/wallet/ethereum/transaction";
 import { WalletAccount } from "../lib/wallet/ethereum/walletAccount";
 import { DexAccount, OrderInfo, Signature } from "../model/types";
-import { Order, TokenAmounts } from "../proto_gen/data_order_pb";
-import {
-  AccountID,
-  Amount,
-  Bips,
-  EdDSAPrivKey,
-  EdDSAPubKey,
-  EdDSASignature,
-  OrderID,
-  TokenID
-} from "../proto_gen/data_types_pb";
-import {
-  Account,
-  DexConfigurations,
-  SimpleOrderCancellationReq
-} from "../proto_gen/service_dex_pb";
 
 export class Exchange {
   private readonly exchangeID: number;
