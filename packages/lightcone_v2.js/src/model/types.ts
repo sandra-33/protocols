@@ -12,7 +12,7 @@ export class KeyPair {
 export class DexAccount {
   accountId: number;
   keyPair: KeyPair;
-  nonce: number;
+  nonce?: number;
 }
 
 /**
@@ -73,6 +73,7 @@ export class OrderRequest {
   [key: string]: any;
 }
 
+// must be cost by circuit -- NOT recommend
 export class CancelRequest {
   account: DexAccount;
   orderToken: string;
@@ -91,75 +92,19 @@ export class GetAPIKeyRequest {
   signature?: Signature;
 }
 
-export class GetDexNonceRequest {
-  account: DexAccount;
-  signature?: Signature;
+export class SignAPIKeyRequest {
+  accountId: number;
 }
 
-export class GetOrderIdRequest {
-  account: DexAccount;
-  tokenS: string;
-  tokenSId?: number;
-  signature?: Signature;
-}
-
-export class GetOrderDetailRequest {
-  account: DexAccount;
-  orderHash: string;
-  signature?: Signature;
-}
-
-export class GetOrdersRequest {
-  account: DexAccount;
-  market?: string;
-  statuses?: [string];
-  start?: number;
-  end?: number;
-  fromHash?: string;
-  limit?: number;
-  signature?: Signature;
-}
-
-export class GetUserBalanceRequest {
-  account: DexAccount;
-  tokens?: [string];
-  tokenIds?: [number];
-  signature?: Signature;
-}
-
-export class GetUserTransactionsRequest {
-  account: DexAccount;
-  statuses?: [string];
-  types?: [string];
-  start?: number;
-  end?: number;
-  fromHash?: string;
-  limit?: number;
-  signature?: Signature;
-}
-
-export class GetUserActionsRequest {
-  account: DexAccount;
-  statuses?: [string];
-  types?: [string];
-  start?: number;
-  end?: number;
-  fromHash?: string;
-  limit?: number;
-  signature?: Signature;
-}
-
-export class GetUserTradesRequest {
+export class FlexCancelRequest {
   account: DexAccount;
   orderHash?: string;
-  market?: string;
-  fromId?: number;
-  limit?: number;
+  clientOrderId?: string;
   signature?: Signature;
 }
 
-export class GetUserFeeRateRequest {
-  account: DexAccount;
-  market?: string;
-  signature?: Signature;
+export class SignFlexCancelRequest {
+  accountId: number;
+  orderHash?: string;
+  clientOrderId?: string;
 }

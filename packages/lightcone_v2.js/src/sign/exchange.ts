@@ -7,20 +7,15 @@ import Transaction from "../lib/wallet/ethereum/transaction";
 import { WalletAccount } from "../lib/wallet/ethereum/walletAccount";
 import {
   CancelRequest,
+  FlexCancelRequest,
   GetAPIKeyRequest,
-  GetDexNonceRequest,
-  GetOrderDetailRequest,
-  GetOrderIdRequest,
-  GetOrdersRequest,
-  GetUserActionsRequest,
-  GetUserBalanceRequest,
-  GetUserFeeRateRequest,
-  GetUserTradesRequest,
-  GetUserTransactionsRequest,
   OrderRequest,
+  SignAPIKeyRequest,
+  SignFlexCancelRequest,
   WithdrawalRequest
 } from "../model/types";
 import * as Poseidon from "../lib/sign/poseidon";
+import sha256 from "crypto-js/sha256";
 
 const assert = require("assert");
 
@@ -415,231 +410,38 @@ export class Exchange {
     return this.signCancel(cancel);
   }
 
+  public submitFlexCancel(request: FlexCancelRequest) {
+    if (request.signature !== undefined) {
+      return;
+    }
+    const account = request.account;
+    let sign = new SignFlexCancelRequest();
+    sign.accountId = account.accountId;
+    sign.orderHash = request.orderHash;
+    sign.clientOrderId = request.clientOrderId;
+    const hash = fm.addHexPrefix(sha256(JSON.stringify(sign)).toString());
+
+    // Create signature
+    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
+
+    // Verify signature
+    const success = EdDSA.verify(hash, request.signature, [
+      account.keyPair.publicKeyX,
+      account.keyPair.publicKeyY
+    ]);
+    assert(success, "Failed to verify signature");
+    return request;
+  }
+
   public signGetApiKey(request: GetAPIKeyRequest) {
     if (request.signature !== undefined) {
       return;
     }
-    const account = request.account;
-    const hasher = Poseidon.createHash(4, 6, 53);
 
-    // Calculate hash
-    const inputs = [
-      account.accountId,
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetDexNonce(request: GetDexNonceRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetOrderId(request: GetOrderIdRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(3, 6, 53);
-    if (!request.tokenS.startsWith("0x")) {
-      request.tokenSId = config.getTokenBySymbol(request.tokenS).id;
-    } else {
-      request.tokenSId = config.getTokenByAddress(request.tokenS).id;
-    }
-    // Calculate hash
-    const inputs = [account.accountId, request.tokenSId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetOrderDetail(request: GetOrderDetailRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(3, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId, request.orderHash];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetOrders(request: GetOrdersRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetUserBalance(request: GetUserBalanceRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetUserTransactions(request: GetUserTransactionsRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signUserActions(request: GetUserActionsRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetUserTrades(request: GetUserTradesRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
-
-    // Create signature
-    request.signature = EdDSA.sign(account.keyPair.secretKey, hash);
-
-    // Verify signature
-    const success = EdDSA.verify(hash, request.signature, [
-      account.keyPair.publicKeyX,
-      account.keyPair.publicKeyY
-    ]);
-    assert(success, "Failed to verify signature");
-    return request;
-  }
-
-  public signGetUserFeeRate(request: GetUserFeeRateRequest) {
-    if (request.signature !== undefined) {
-      return;
-    }
-    const account = request.account;
-    const hasher = Poseidon.createHash(2, 6, 53);
-
-    // Calculate hash
-    const inputs = [account.accountId];
-    const hash = hasher(inputs).toString(10);
+    let account = request.account;
+    let sign = new SignAPIKeyRequest();
+    sign.accountId = account.accountId;
+    const hash = fm.addHexPrefix(sha256(JSON.stringify(sign)).toString());
 
     // Create signature
     request.signature = EdDSA.sign(account.keyPair.secretKey, hash);

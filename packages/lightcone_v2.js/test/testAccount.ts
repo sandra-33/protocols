@@ -2,6 +2,8 @@ import assert = require("assert");
 import ethereum from "../src/lib/wallet/ethereum";
 import { Account } from "../src";
 import { EdDSA } from "../src/lib/sign/eddsa";
+import * as fm from "../src/lib/wallet/common/formatter";
+import sha256 from "crypto-js/sha256";
 
 describe("test account sign functions", function() {
   let pkAccount;
@@ -103,235 +105,70 @@ describe("test account sign functions", function() {
     done();
   });
 
+  it("test sign flex cancel", function(done) {
+    const account = new Account(pkAccount);
+    const keyPair = EdDSA.generateKeyPair("random");
+    const expected = {
+      Rx:
+        "1110613801524677782175386695772852418122570733827815846034025006215153940880",
+      Ry:
+        "3982749547116550095754172139343814599526362479451462019563906435375945190167",
+      s:
+        "969328294518143689671285432530365059721276999430554085065814670197361995261"
+    };
+
+    let signed = null;
+    assert.doesNotThrow(() => {
+      signed = account.submitFlexCancel(
+        4,
+        keyPair.publicKeyX,
+        keyPair.publicKeyY,
+        keyPair.secretKey,
+        "17475261927243449585218510236711727843257822127256856388080295820288941991181",
+        "17475261927243449585218510236711727843257822127256856388080295820288941991181"
+      );
+    });
+    assert.strictEqual(signed.signature.Rx, expected.Rx);
+    assert.strictEqual(signed.signature.Ry, expected.Ry);
+    assert.strictEqual(signed.signature.s, expected.s);
+    done();
+  });
+
   it("test sign get API key", function(done) {
     const account = new Account(pkAccount);
     const keyPair = EdDSA.generateKeyPair("random");
     const expected = {
       Rx:
-        "6717313863549279085066393349511992449362100318538198171271018296006351820823",
+        "4907531144030082714673166788853625691094645218263800925571852359778817407478",
       Ry:
-        "2027016126976973875700528022436790037848085570241630349087041983504660051098",
+        "982596782634396073565790328328781534320554306331087434157994413941137814392",
       s:
-        "1550178689038019647824751372373321180664746373234329435725556320443028385655"
+        "2683292836712626470273132449382532439414473128760965656693941100220771190110"
     };
-    let signedOrder = account.getApiKey(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
+
+    let signed = null;
+    assert.doesNotThrow(() => {
+      signed = account.getApiKey(
+        4,
+        keyPair.publicKeyX,
+        keyPair.publicKeyY,
+        keyPair.secretKey
+      );
+    });
+    assert.strictEqual(signed.signature.Rx, expected.Rx);
+    assert.strictEqual(signed.signature.Ry, expected.Ry);
+    assert.strictEqual(signed.signature.s, expected.s);
     done();
   });
 
-  it("test sign get DEX nonce", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getDexNonce(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
+  it("test sign a random string", function(done) {
+    const hash = fm.addHexPrefix(sha256("some string").toString());
 
-  it("test sign get order ID", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "21375701218003200532229964128164169536004640129025202274924915266284156333303",
-      Ry:
-        "10345814635304250882917258988203007790902858210317607847780267135285149843608",
-      s:
-        "835810994075138215351491538127263792812382712347171289935475029413801004204"
-    };
-    let signedOrder = account.getOrderId(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey,
-      "LRC"
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get order detail", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "7175851741009828872043928215501845307819332961894616908423881710079769568937",
-      Ry:
-        "2113427980835241982701225194283093882876718604887819314900886720348576384483",
-      s:
-        "750769101859375463519140572710290049895346093353751218253611416375369410074"
-    };
-    let signedOrder = account.getOrderDetail(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey,
-      "3259542248112692944753336581445147695645642704960036187016566871776640460"
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get orders", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getOrders(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get user balance", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getUserBalance(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get user transactions", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getUserTransactions(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get user actions", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getUserActions(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get user trades", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getUserTrades(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
-    done();
-  });
-
-  it("test sign get user fee rate", function(done) {
-    const account = new Account(pkAccount);
-    const keyPair = EdDSA.generateKeyPair("random");
-    const expected = {
-      Rx:
-        "2572796599343858415159676118493638296628563332684854731866922938085591796991",
-      Ry:
-        "2072712850867329017575470422224929357095298128730138069517472805577507786107",
-      s:
-        "1896847225899030863906407511803214357943710736864780223404512462970636155755"
-    };
-    let signedOrder = account.getUserFeeRate(
-      4,
-      keyPair.publicKeyX,
-      keyPair.publicKeyY,
-      keyPair.secretKey
-    );
-    assert.strictEqual(signedOrder.signature.Rx, expected.Rx);
-    assert.strictEqual(signedOrder.signature.Ry, expected.Ry);
-    assert.strictEqual(signedOrder.signature.s, expected.s);
+    // Create signature
+    const signature = EdDSA.sign("938285885", hash);
+    console.log(signature.Rx);
+    console.log(signature.Ry);
+    console.log(signature.s);
     done();
   });
 });

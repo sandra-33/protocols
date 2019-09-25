@@ -7,16 +7,8 @@ import { WalletAccount } from "../lib/wallet/ethereum/walletAccount";
 import {
   CancelRequest,
   DexAccount,
+  FlexCancelRequest,
   GetAPIKeyRequest,
-  GetDexNonceRequest,
-  GetOrderDetailRequest,
-  GetOrderIdRequest,
-  GetOrdersRequest,
-  GetUserActionsRequest,
-  GetUserBalanceRequest,
-  GetUserFeeRateRequest,
-  GetUserTradesRequest,
-  GetUserTransactionsRequest,
   KeyPair,
   OrderRequest,
   WithdrawalRequest
@@ -319,80 +311,24 @@ export class Account {
   }
 
   /**
-   * Get Dex Nonce
+   * Get Api Key signature
    * @param accountId: account ID in exchange
    * @param tradingPubKeyX: trading public key X of account, decimal string
    * @param tradingPubKeyY: trading public key Y of account, decimal string
    * @param tradingPrivKey: trading private key of account, decimal string
+   * @param orderHash: [OPTIONAL] specified order hash to cancel
+   * @param clientOrderId: [OPTIONAL] specified client order ID to cancel
    */
-  public getDexNonce(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string
-  ) {
-    try {
-      const request = new GetDexNonceRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      return exchange.signGetDexNonce(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-  /**
-   * Get Order ID
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param tokenSell: token symbol or address of order
-   */
-  public getOrderId(
+  public submitFlexCancel(
     accountId: number,
     tradingPubKeyX: string,
     tradingPubKeyY: string,
     tradingPrivKey: string,
-    tokenSell: string
+    orderHash?: string,
+    clientOrderId?: string
   ) {
     try {
-      const request = new GetOrderIdRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      request.tokenS = tokenSell;
-      return exchange.signGetOrderId(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get Order Detail
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param orderHash: orderHash of order detail to get, decimal string
-   */
-  public getOrderDetail(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    orderHash: string
-  ) {
-    try {
-      const request = new GetOrderDetailRequest();
+      const request = new FlexCancelRequest();
       const account = new DexAccount();
       account.keyPair = new KeyPair();
       request.account = account;
@@ -401,233 +337,8 @@ export class Account {
       request.account.keyPair.publicKeyY = tradingPubKeyY;
       request.account.keyPair.secretKey = tradingPrivKey;
       request.orderHash = orderHash;
-      return exchange.signGetOrderDetail(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get Orders
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param statuses: [OPTION] specified statuses of user orders
-   * @param start: [OPTION] beginning period of user orders
-   * @param end: [OPTION] ending period of user orders
-   * @param fromHash: [OPTION] from where of user orders
-   * @param limit: [OPTION] how many records of user orders
-   */
-  public getOrders(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    statuses?: [string],
-    start?: number,
-    end?: number,
-    fromHash?: string,
-    limit?: number
-  ) {
-    try {
-      const request = new GetOrdersRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      request.statuses = statuses;
-      request.start = start;
-      request.end = end;
-      request.fromHash = fromHash;
-      request.limit = limit;
-      return exchange.signGetOrders(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get User Balance
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param tokenIds: [OPTION] specified tokens of user balances
-   */
-  public getUserBalance(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    tokenIds?: [string]
-  ) {
-    try {
-      const request = new GetUserBalanceRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      return exchange.signGetUserBalance(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get User Transactions
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param statuses: [OPTION] specified statuses of user trades
-   * @param start: [OPTION] beginning period of user trades
-   * @param end: [OPTION] ending period of user trades
-   * @param fromHash: [OPTION] from where of user trades
-   * @param limit: [OPTION] how many records of user trades
-   */
-  public getUserTransactions(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    statuses?: [string],
-    start?: number,
-    end?: number,
-    fromHash?: string,
-    limit?: number
-  ) {
-    try {
-      const request = new GetUserTransactionsRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      request.statuses = statuses;
-      request.start = start;
-      request.end = end;
-      request.fromHash = fromHash;
-      request.limit = limit;
-      return exchange.signGetUserTransactions(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get User Actions
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param statuses: [OPTION] specified statuses of user trades
-   * @param start: [OPTION] beginning period of user trades
-   * @param end: [OPTION] ending period of user trades
-   * @param fromHash: [OPTION] from where of user trades
-   * @param limit: [OPTION] how many records of user trades
-   */
-  public getUserActions(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    statuses?: [string],
-    start?: number,
-    end?: number,
-    fromHash?: string,
-    limit?: number
-  ) {
-    try {
-      const request = new GetUserActionsRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      request.statuses = statuses;
-      request.start = start;
-      request.end = end;
-      request.fromHash = fromHash;
-      request.limit = limit;
-      return exchange.signUserActions(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get User Trades
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param market: [OPTION] specified market of user trades
-   * @param fromId: [OPTION] from where of user trades
-   * @param limit: [OPTION] how many records of user trades
-   */
-  public getUserTrades(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    market?: string,
-    fromId?: number,
-    limit?: number
-  ) {
-    try {
-      const request = new GetUserTradesRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      request.market = market;
-      request.fromId = fromId;
-      request.limit = limit;
-      return exchange.signGetUserTrades(request);
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  /**
-   * Get User Fee Rate
-   * @param accountId: account ID in exchange
-   * @param tradingPubKeyX: trading public key X of account, decimal string
-   * @param tradingPubKeyY: trading public key Y of account, decimal string
-   * @param tradingPrivKey: trading private key of account, decimal string
-   * @param market: [OPTION] user fee rate of specified market
-   */
-  public getUserFeeRate(
-    accountId: number,
-    tradingPubKeyX: string,
-    tradingPubKeyY: string,
-    tradingPrivKey: string,
-    market?: string
-  ) {
-    try {
-      const request = new GetUserFeeRateRequest();
-      const account = new DexAccount();
-      account.keyPair = new KeyPair();
-      request.account = account;
-      request.account.accountId = accountId;
-      request.account.keyPair.publicKeyX = tradingPubKeyX;
-      request.account.keyPair.publicKeyY = tradingPubKeyY;
-      request.account.keyPair.secretKey = tradingPrivKey;
-      return exchange.signGetUserFeeRate(request);
+      request.clientOrderId = clientOrderId;
+      return exchange.submitFlexCancel(request);
     } catch (e) {
       throw e;
     }
