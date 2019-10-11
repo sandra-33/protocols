@@ -5,7 +5,7 @@
   "exchangeId": 3,
   "walletAddressId": 0,
   "maxFeeBips": 20,
-  "exchangeAddress": "0x7b1fB28da00c648756a8B2B08702b201fF970323\n",
+  "exchangeAddress": "0x7b1fB28da00c648756a8B2B08702b201fF970323",
   "maxAmount": "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
   "markets": [
     {
