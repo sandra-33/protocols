@@ -16,11 +16,34 @@ export class Account {
 
   /**
    * Approve
-   * @param symbol: approve token symbol
+   * @param symbol: approve token symbol to zero
    * @param nonce: Ethereum nonce of this address
    * @param gasPrice: gas price in gwei
    */
-  public async approve(symbol: string, nonce: number, gasPrice: number) {
+  public approveZero(symbol: string, nonce: number, gasPrice: number) {
+    const token = config.getTokenBySymbol(symbol);
+    const rawTx = new Transaction({
+      to: token.address,
+      value: "0x0",
+      data: Contracts.ERC20Token.encodeInputs("approve", {
+        _spender: config.getExchangeAddress(),
+        _value: "0x0"
+      }),
+      chainId: config.getChainId(),
+      nonce: fm.toHex(nonce),
+      gasPrice: fm.toHex(fm.fromGWEI(gasPrice)),
+      gasLimit: fm.toHex(config.getGasLimitByType("approve").gasInWEI)
+    });
+    return this.account.signEthereumTx(rawTx.raw);
+  }
+
+  /**
+   * Approve
+   * @param symbol: approve token symbol to max
+   * @param nonce: Ethereum nonce of this address
+   * @param gasPrice: gas price in gwei
+   */
+  public approveMax(symbol: string, nonce: number, gasPrice: number) {
     const token = config.getTokenBySymbol(symbol);
     const rawTx = new Transaction({
       to: token.address,
@@ -34,7 +57,37 @@ export class Account {
       gasPrice: fm.toHex(fm.fromGWEI(gasPrice)),
       gasLimit: fm.toHex(config.getGasLimitByType("approve").gasInWEI)
     });
-    return await this.account.signEthereumTx(rawTx.raw);
+    return this.account.signEthereumTx(rawTx.raw);
+  }
+
+  /**
+   * generata key pair of account in DEX
+   * @param password: user password
+   */
+  public generataKeyPair(password: string) {
+    try {
+      return exchange.generateKeyPair(password);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  /**
+   * verify password of account in DEX
+   * @param publicKeyX: publicKeyX of account's key pair
+   * @param publicKeyY: publicKeyY of account's key pair
+   * @param password: account's password
+   */
+  public verifyPassword(
+    publicKeyX: string,
+    publicKeyY: string,
+    password: string
+  ) {
+    try {
+      return exchange.verifyPassword(publicKeyX, publicKeyY, password);
+    } catch (e) {
+      throw e;
+    }
   }
 
   /**

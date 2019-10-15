@@ -1,3 +1,4 @@
+import * as EdDSA from "../lib/sign/eddsa";
 import { BitArray } from "../lib/sign/bitarray";
 import { generateKeyPair, sign } from "../lib/sign/eddsa";
 import { ethereum } from "../lib/wallet";
@@ -9,6 +10,24 @@ import { OrderInfo } from "../model/types";
 
 export class Exchange {
   private currentWalletAccount: WalletAccount;
+
+  public generateKeyPair(password: string) {
+    assert(this.currentWalletAccount !== null);
+    return EdDSA.generateKeyPair(
+      this.currentWalletAccount.getAddress() + password
+    );
+  }
+
+  public verifyPassword(
+    publicKeyX: string,
+    publicKeyY: string,
+    password: string
+  ) {
+    const keyPair = this.generateKeyPair(password);
+    return (
+      keyPair.publicKeyX === publicKeyX && keyPair.publicKeyY === publicKeyY
+    );
+  }
 
   public createOrUpdateAccount(
     wallet: WalletAccount,
