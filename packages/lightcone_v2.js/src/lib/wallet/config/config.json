@@ -1,13 +1,13 @@
 {
   "defaultGasPrice": 21,
   "defaultGasLimit": "0x7a120",
-  "chainId": 1,
-  "exchangeId": 1,
+  "chainId": 4,
+  "exchangeId": 3,
   "label": 211,
   "fee": "0.01",
   "feeToken": "ETH",
   "maxFeeBips": 20,
-  "exchangeAddress": "0x1D307532A97879b866A6fE33bf4A517bD28DE854",
+  "exchangeAddress": "0x7b1fB28da00c648756a8B2B08702b201fF970323",
   "maxAmount": "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
   "txs": [
     {
