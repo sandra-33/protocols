@@ -1,13 +1,13 @@
 {
   "defaultGasPrice": 21,
   "defaultGasLimit": "0x7a120",
-  "chainId": 4,
+  "chainId": 5,
   "exchangeId": 1,
   "label": 211,
   "fee": "0.01",
   "feeToken": "ETH",
   "maxFeeBips": 20,
-  "exchangeAddress": "0xe3fdE0D3A8D62c2F8892187483D1b4ede779008F",
+  "exchangeAddress": "0x3d88d9C4adC342cEff41855CF540844268390BE6",
   "maxAmount": "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF",
   "txs": [
     {
@@ -104,7 +104,7 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "digits": 18,
-      "address": "0x185c658fE3F202cA5D9ba096dB1dA4EB41aC70bA",
+      "address": "0xe0615A104438c7D17B5E63A1282dC3B785F1C555",
       "unit": "WETH",
       "website": "https://weth.io",
       "allowance": "1000000000000000000000",
@@ -117,7 +117,7 @@
       "symbol": "LRC",
       "name": "Loopring",
       "digits": 18,
-      "address": "0xd4E71C4bb48850f5971cE40Aa428b09F242D3e8a",
+      "address": "0x159aFEFCda3d1ACb6EDCebaBeA8FA446e2ba1575",
       "unit": "LRC",
       "website": "https://loopring.org",
       "allowance": "1000000000000000000000",
