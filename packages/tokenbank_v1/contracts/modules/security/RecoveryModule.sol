@@ -69,7 +69,7 @@ contract RecoveryModule is SecurityModule
         address[] calldata signers
         )
         external
-        nonReentrantExceptFromThis
+        nonReentrant
         onlyFromMetaTx
         notWalletOwner(wallet, newOwner)
     {
@@ -100,7 +100,7 @@ contract RecoveryModule is SecurityModule
         address[] calldata signers
         )
         external
-        nonReentrantExceptFromThis
+        nonReentrant
         onlyFromMetaTx
     {
         WalletRecovery storage recovery = wallets[wallet];
@@ -121,7 +121,7 @@ contract RecoveryModule is SecurityModule
     /// @param wallet The wallet for which the recovery shall complete.
     function completeRecovery(address wallet)
         external
-        nonReentrantExceptFromThis
+        nonReentrant
     {
         WalletRecovery storage recovery = wallets[wallet];
         require(recovery.completeAfter > 0, "NOT_STARTED");
